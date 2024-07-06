@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jfy.dao.OrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jfy.pojo.Order">
+        <id column="oid" property="oid" />
+        <result column="status" property="status" />
+        <result column="total_price" property="totalPrice" />
+        <result column="uid" property="uid" />
+        <result column="createtime" property="createtime" />
+    </resultMap>
+
+    <resultMap id="OrderResultMap" type="com.jfy.pojo.Order">
+        <id property="oid" column="oid" />
+        <result property="status" column="status" />
+        <result property="totalPrice" column="total_price" />
+        <result property="createtime" column="createtime" />
+        <collection property="productList" ofType="com.jfy.pojo.Product">
+            <id property="pid" column="pid" />
+            <result property="pname" column="pname" />
+            <result property="pfile" column="pfile" />
+            <result property="price" column="price" />
+            <association property="cart" column="cid" javaType="com.jfy.pojo.Cart">
+                <id property="cid" column="cid" />
+                <result property="pquantity" column="pquantity" />
+            </association>
+        </collection>
+    </resultMap>
+
+    <select id="getOrderInfoByUid" parameterType="int" resultMap="OrderResultMap">
+        SELECT
+            o.oid,
+            o.total_price,
+            o.status,
+            o.createTime,
+            p.pid,
+            p.pname,
+            p.pfile,
+            p.price,
+            c.pquantity
+        FROM
+            t_order o
+                JOIN
+            t_order_detail op ON o.oid = op.oid
+                JOIN
+            t_product p ON op.pid = p.pid
+                JOIN
+            cart c ON p.pid = c.pid
+        WHERE
+            o.uid = #{uid} and c.uid = #{uid}
+    </select>
+
+</mapper>

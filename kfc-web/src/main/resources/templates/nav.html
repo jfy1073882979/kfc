@@ -1,0 +1,50 @@
+<div th:fragment="nav">
+
+    <div class="layui-fluid" id="LAY-component-nav" style="padding:0px;">
+        <div class="layui-row">
+            <div class="layui-col-md8 layui-col-md-offset2">
+                <div class="layui-card">
+                    <div class="layui-card-body"  style="padding:0px; margin:0px;margin-bottom:10px;">
+                        <ul class="layui-nav" lay-filter="component-nav" style="background-color: #8787e0;">
+                            <li class="layui-nav-item">
+                                <a th:href="@{/prod/index.html}">首页</a>
+                            </li>
+                            <li class="layui-nav-item">
+                                <a th:href="@{/prod/index.html}">商品</a>
+
+                            <li class="layui-nav-item">
+                                <a th:href="@{/cart/showcartList}">购物车</a>
+                            </li>
+
+                            <li class="layui-nav-item">
+                                <a th:href="@{/order/toOrderList}">查看订单</a>
+                            </li>
+
+                            <li class="layui-nav-item">
+                                <a th:href="@{/user/center}">后台管理</a>
+                            </li>
+
+<!--                            <li class="layui-nav-item">-->
+<!--                                <a th:href="@{/user/admin}">后台管理</a>-->
+<!--                            </li>-->
+
+                            <li class="layui-nav-item">
+                                <a th:if="${session.user}== null" th:href="@{/user/toLogin}">登录/注册</a>
+                            </li>
+
+                            <li class="layui-nav-item">
+                                <a th:if="${session.user}!= null" ><img th:src="${session.user.avatar}" class="layui-nav-img"><span th:text="${session.user.name}"></span></a>
+                                <dl class="layui-nav-child">
+                                    <dd><a href="javascript:;">修改信息</a></dd>
+                                    <dd><a href="javascript:;">安全管理</a></dd>
+                                    <dd><a th:href="@{/user/logout}">退了</a></dd>
+                                </dl>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

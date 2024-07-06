@@ -1,0 +1,83 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <title>评论管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" th:href="@{/layuiadmin/layui/css/layui.css}" href="/static/layuiadmin/layui/css/layui.css"
+          media="all">
+    <link rel="stylesheet" th:href="@{/layuiadmin/style/admin.css}" href="/static/layuiadmin/style/admin.css"
+          media="all">
+    <script src="/static/js/jquery-3.5.1.min.js" th:src="@{/js/jquery-3.5.1.min.js}"></script>
+    <script th:src="@{/layuiadmin/layui/layui.js}" src="/static/layuiadmin/layui/layui.js"></script>
+</head>
+
+<body>
+<div class="layui-container">
+    <table class="layui-table" id="commentTable">
+        <thead>
+        <tr>
+            <th>评论编号</th>
+            <th>评论内容</th>
+            <th>评分</th>
+            <th>时间</th>
+            <th>商品编号</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- 评论列表将在这里动态生成 -->
+        </tbody>
+    </table>
+</div>
+<script>
+    $(document).ready(function () {
+        // 发送 AJAX 请求获取评论列表
+        var uid = [[${ session.user.uid }]]
+        $.ajax({
+            url: '/discuss/getDiscussByUid/'+uid,  // 你的 API 地址
+            type: 'post',
+            success: function (commentList) {
+                console.log(commentList);
+                $.each(commentList, function (index, comment) {
+                    var commentRow = '<tr><td>' + comment.did + '</td><td>' + comment.content + '</td><td>' + comment.rating + '</td><td>' + comment.createtime + '</td><td>' + comment.pid + '</td><td><button class="layui-btn layui-btn-normal" onclick="editComment(' + comment.did + ')">编辑</button><button class="layui-btn layui-btn-danger" onclick="deleteComment(' + comment.did + ')">删除</button></td></tr>';
+                    $('#commentTable').append(commentRow);
+                });
+            },
+            error: function () {
+                alert('获取评论列表失败');
+            }
+        });
+    });
+
+    function editComment(cid) {
+        // 在这里添加编辑评论的逻辑
+    }
+
+    function deleteComment(did) {
+        // 在这里添加删除评论的逻辑
+        $.ajax({
+            url: '/discuss/deleteDiscuss/' + did,
+            type: 'post',
+            data: {},
+            success: function (data) {
+                location.reload();
+                if (data.code == 0) {
+                    alert('删除成功');
+                    location.reload();
+                } else {
+                    alert('删除失败');
+                }
+            },
+            error: function () {
+                alert('删除失败');
+            }
+        });
+    }
+</script>
+</body>
+
+</html>

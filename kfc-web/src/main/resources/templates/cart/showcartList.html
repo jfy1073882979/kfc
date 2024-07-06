@@ -1,0 +1,356 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <title>购物车列表</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" th:href="@{/layuiadmin/layui/css/layui.css}" href="/static/layuiadmin/layui/css/layui.css" media="all">
+  <link rel="stylesheet" th:href="@{/layuiadmin/style/admin.css}" href="/static/layuiadmin/style/admin.css" media="all">
+  <style>
+    .layui-table-cell .layui-form-checkbox[lay-skin="primary"] {
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+
+     #total-amount {
+       font-size: 1.5em; /* 增加字体大小 */
+       color: #ff0000; /* 改变字体颜色为红色 */
+       white-space: nowrap;
+     }
+
+  </style>
+</head>
+
+<body>
+<div th:replace="nav :: nav"></div>
+
+  <div class="layui-row">
+    <div class="layui-col-md8 layui-col-md-offset2">
+      <div class="layui-card">
+
+        <!--根据商品名称模糊查询-->
+        <div id="xxx" class="layui-form layui-card-header layuiadmin-card-header-auto">
+          <div class="layui-form-item">
+            <div class="layui-inline">
+              <label class="layui-form-label">商品名称：</label>
+              <div class="layui-input-inline">
+                <input type="text" id="search_prodName" placeholder="请输入商品名称" autocomplete="off"
+                       class="layui-input"/>
+              </div>
+            </div>
+            <div class="layui-inline">
+              <button id="search-submit" class="layui-btn layuiadmin-btn-list"
+                      lay-filter="LAY-app-contlist-search">
+                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="layui-card-body layui-form">
+          <!--        异步方式生成表格体-->
+          <table id="LAY-app-content-list" lay-filter="LAY-app-content-list" class="layui-hide">
+          </table>
+
+          <!--工具栏-->
+          <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+              <button class="layui-btn layuiadmin-btn-list layui-btn-danger"
+                      lay-event="batchdel">批量删除</button>
+            </div>
+          </script>
+
+          <!--表格右侧的操作列-->
+          <script type="text/html" id="table-content-list">
+            <a class="layui-btn layui-btn-xs" lay-event="decrease">减少</a>
+            <a class="layui-btn layui-btn-xs" lay-event="increase">增加</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+          </script>
+
+        </div>
+
+
+          <!--结算功能-->
+          <div id="jiesuan" class="layui-form layui-card-header layuiadmin-card-header-auto">
+              <div class="layui-form-item">
+                <div class="layui-inline">
+                      <label class="layui-form-label">总金额:</label>
+                </div>
+                <div class="layui-inline">
+                  <span id="total-amount"></span>
+                </div>
+
+
+
+              </div>
+          </div>
+
+          <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="text-align: center;">
+              <button class="layui-btn layuiadmin-btn-list layui-btn-normal" lay-submit
+                      lay-filter="layuiadmin-app-form-submit" id="order">生成订单
+              </button>
+          </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script th:src="@{/layuiadmin/layui/layui.js}" src="/static/layuiadmin/layui/layui.js"></script>
+<script src="/static/js/jquery-3.5.1.min.js" th:src="@{/js/jquery-3.5.1.min.js}"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    // 计算总金额
+    // 发出 AJAX 请求，获取所有购物车的总金额
+
+    $.ajax({
+      url: "/cart/countMoney",
+      type: "post",
+      success: function (res) {
+        console.log(res);
+        // 更新总金额
+        $('#total-amount').text(res);
+      }
+    });
+
+
+
+  });
+
+
+
+  layui.config({
+    base: '/layuiadmin/' //静态资源所在路径
+  }).extend({
+    index: 'lib/index' //主入口模块
+  }).use(['index', 'table'], function(){
+    var table = layui.table
+            ,form = layui.form
+            ,layer = layui.layer
+            ,laypage = layui.laypage
+            ,$ = layui.jquery;
+
+    layer.ready(function (){
+      tableRender(table, { pname: ''});
+    });
+
+    $('#order').on('click', function() {
+      //跳转/order/createOrder请求
+        window.location.href = "/order/createOrder";
+
+
+
+    });
+
+    //监听行外左侧工具条按钮
+    table.on('toolbar(LAY-app-content-list)', function(obj){
+      if(obj.event == 'batchdel') {
+        // 获取选中了复选框的记录
+        var checkStatus = table.checkStatus('LAY-app-content-list'), data = checkStatus.data;
+        var delList=[];
+        data.forEach(function(n,i){
+          delList.push(n.cid);
+        });
+        console.log(delList);
+        layer.confirm('确认要删除被选中的记录吗？', {
+          btn : [ '确定', '取消' ]//按钮
+        }, function(index) {
+          //提交 Ajax 成功后，关闭当前弹层并重载表格
+          $.ajax({
+            type: 'post',
+            url: '/cart/batchDelCart', // ajax请求路径
+            data: {
+              cids: delList
+            },
+            success: function(data){
+              console.log(data);
+              if(data.code == '0'){
+                var param_search = {
+                  pname: $("#search_prodName").val()
+                };
+                tableRender(layui.table, param_search);
+                layer.msg('批量删除成功', {
+                  time: 1000,
+                });
+              }else {
+                layer.msg('批量删除失败', {
+                  time: 1000,
+                });
+              }
+            }
+          });
+        });
+      }
+    });
+
+    //监听行内操作列按钮
+    table.on('tool(LAY-app-content-list)', function(obj){
+     if(obj.event == 'del') {
+        console.log("del for:" + obj.data.cid);
+        layer.confirm('确认要删除吗？', {
+          btn : [ '确定', '取消' ]//按钮
+        }, function(index) {
+          //提交 Ajax 成功后，关闭当前弹层并重载表格
+          $.ajax({
+            type: 'post',
+            url: '/cart/deleteCartByCid/' + obj.data.cid, // ajax请求路径
+            data: {},
+            success: function(data){
+              console.log(data);
+              $.ajax({
+                url: "/cart/countMoney",
+                type: "post",
+                success: function (res) {
+                  console.log(res);
+                  // 更新总金额
+                  $('#total-amount').text(res);
+                }
+              });
+              if(data.code == '0'){
+
+
+                var param_search = {
+                  pname: $("#search_prodName").val()
+                };
+                tableRender(layui.table, param_search);
+                layer.msg('删除成功', {
+                  time: 1000,
+                });
+              }else {
+                layer.msg('删除失败', {
+                  time: 1000,
+                });
+              }
+            }
+          });
+        });
+      }else if(obj.event == 'increase') {
+        console.log("increase for:" + obj.data.cid);
+        $.ajax({
+          type: 'post',
+          url: '/cart/increaseCartByCid/' + obj.data.cid, // ajax请求路径
+          data: {},
+          success: function(data){
+            console.log(data);
+            table.reload('LAY-app-content-list');
+            $.ajax({
+              url: "/cart/countMoney",
+              type: "post",
+              success: function (res) {
+                console.log(res);
+                // 更新总金额
+                $('#total-amount').text(res);
+              }
+            });
+          }
+        });
+
+     }else if(obj.event == 'decrease') {
+        console.log("decrease for:" + obj.data.cid);
+        $.ajax({
+          type: 'post',
+          url: '/cart/decreaseCartByCid/' + obj.data.cid, // ajax请求路径
+          data: {},
+          success: function(data){
+            console.log(data);
+            table.reload('LAY-app-content-list');
+            $.ajax({
+              url: "/cart/countMoney",
+              type: "post",
+              success: function (res) {
+                console.log(res);
+                // 更新总金额
+                $('#total-amount').text(res);
+              }
+            });
+          }
+        });
+      }
+    });
+
+
+    //搜索框的事件绑定
+    $("#search-submit").on("click", function (){
+      console.log("do search-submit.");
+      var param_search = {
+        pname: $("#search_prodName").val()
+      };
+      tableRender(layui.table, param_search);
+      return false;
+    });
+
+
+  });
+
+  function tableRender(table, param_search) {
+    console.log("param_search=" + param_search);
+
+    table.render({
+      elem: '#LAY-app-content-list'  // 指定渲染的table的id属性
+      ,url: '/cart/cartList' // 数据接口
+      ,where: param_search  // 附带的查询的参数
+      ,page: true  // 开启自带分页
+      ,limits: [2,5,10,20,50]  //每页条数的选择项，默认：[10,20,30,40,50,60,70,80,90]。
+      ,limit: 5 //每页默认显示的数量
+      ,layout: ['count', 'prev', 'page', 'next', 'limit', 'refresh', 'skip'] // 分页栏的顺序
+      ,method: 'post'  //提交方式
+      ,request: {pageName: 'page', limitName: 'limit'}  // 要对应请求处理方法中的参数名称
+      ,toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+      ,cellMinWidth: 80
+      ,defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+        title: '提示'
+        ,layEvent: 'LAYTABLE_TIPS'
+        ,icon: 'layui-icon-tips'
+      }]
+      ,title: '购物车信息列表'
+      ,cols: [ [ {type:'checkbox'}
+        ,{field:'cid', title:'购物车编号', width:100, sort:'true'}  // 每一列，field，json对象中的属性名称
+        ,{
+            title:'商品主键',
+            width:100,
+            templet:function (d) {
+                console.log(d);
+                return d.productList[0].pid
+            }
+        }
+         ,{
+              title:'商品名称',
+              width:100,
+              templet:function (d) {
+                  return d.productList[0].pname
+              }
+            }
+            ,{title:'商品图片',
+          width:200,
+          templet:function (d) {
+            return '<img src="' + d.productList[0].pfile +'" style="object-fit: contain;"/>'
+          }}
+        ,{field:'pquantity', title:'购物数量', width:100}  // title 显示的标题
+        ,{
+            title:'商品单价',
+            width:100,
+                templet:function (d) {
+                    return d.productList[0].price.toFixed(2)
+                }
+        }
+        ,{
+          title:'总计',
+            width:100,
+            templet:function (d) {
+                return (d.productList[0].price*d.pquantity).toFixed(2)
+            }
+
+
+
+        }
+
+        ,{fixed: 'right', title:'操作', toolbar: '#table-content-list', width:200}
+      ] ]
+    });
+  }
+</script>
+</body>
+</html>

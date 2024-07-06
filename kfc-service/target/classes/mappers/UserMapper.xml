@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jfy.dao.UserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jfy.pojo.User">
+        <id column="uid" property="uid" />
+        <result column="name" property="name" />
+        <result column="password" property="password" />
+        <result column="telephone" property="telephone" />
+        <result column="createTime" property="createTime" />
+        <result column="role_id" property="roleId" />
+        <result column="avatar" property="avatar" />
+        <result column="balance" property="balance" />
+        <result column="likes" property="likes" />
+    </resultMap>
+
+
+    <resultMap id="UserDiscussMap" type="com.jfy.pojo.User" extends="BaseResultMap">
+        <collection property="discussList" ofType="com.jfy.pojo.Discuss">
+            <id column="did" property="did" />
+            <result column="content" property="content" />
+            <result column="createtime" property="createtime" />
+            <result column="rating" property="rating" />
+        </collection>
+    </resultMap>
+
+
+
+
+    <select id="getUserDiscussByPid" resultMap="UserDiscussMap">
+        select u.uid, u.name, u.avatar, d.content, d.createTime,d.rating
+        from user u, discuss d
+        where u.uid = d.uid and d.pid = #{pid}
+    </select>
+
+
+
+</mapper>

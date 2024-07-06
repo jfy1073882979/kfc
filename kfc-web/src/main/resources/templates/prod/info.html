@@ -1,0 +1,343 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>商品详情</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" th:href="@{/layuiadmin/layui/css/layui.css}" href="../../layuiadmin/layui/css/layui.css"
+          media="all">
+    <link rel="stylesheet" th:href="@{/layuiadmin/style/admin.css}" href="../../layuiadmin/style/admin.css" media="all">
+    <link rel="stylesheet" th:href="@{/layuiadmin/style/template.css}" href="../../layuiadmin/style/template.css"
+          media="all">
+</head>
+<body>
+<style>
+    .user-info {
+        display: flex;
+        align-items: start;
+        margin-bottom: 10px;
+    }
+
+    .avatar {
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        margin-right: 10px;
+    }
+
+    .username {
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .comment-content {
+        margin-bottom: 10px;
+    }
+
+    .comment-time {
+        font-size: 0.8em;
+        color: #888;
+    }
+
+    #commentSection {
+        margin-left: auto;
+        margin-right: auto;
+        width: 80%;
+    }
+</style>
+
+<div class="layui-fluid" id="LAY-component-nav" style="padding:0px;">
+
+    <div th:replace="nav :: nav"></div>
+
+    <div class="layui-row" style="margin-bottom:10px; margin-top:-50px;">
+        <div class="layui-col-md8 layui-col-md-offset2">
+            <div class="layui-row">
+                <div class="layui-col-md6">
+                    <div class="grid-demo">
+                        <div class="panel-body layadmin-homepage-shadow">
+                            <div class="media-body" style="background:red;width: 500px;height:300px;">
+                                <img th:src="@{${product.pfile}}" width="500" height="300">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md6">
+                    <div class="grid-demo">
+                        <div class="panel-body layadmin-homepage-shadow">
+                            <div class="media-body" style="width: 510px;height:300px;">
+                                <div class="pad-btm" style="padding-top:10px;">
+                                    <p class="fontColor">
+                                        <span style="color: black;font-size: 20px;">商品名称:</span>
+                                        <span style="color: #0000FF;font-size: 18px;"
+                                              th:text="${product.pname}"></span>
+                                    </p>
+                                </div>
+                                <div class="pad-btm" style="padding-top:10px;">
+                                    <p class="fontColor">
+                                        <span style="color: black;font-size: 20px;">商品评分:</span>
+                                        <span style="color: #0000FF;font-size: 18px;"
+                                              th:text="${product.rating}"></span>
+                                    </p>
+                                </div>
+
+                                <div class="pad-btm" style="padding-top:10px;">
+                                    <p class="fontColor">
+                                        <span style="color: black;font-size: 20px;">已售:</span>
+                                        <span style="color: #0000FF;font-size: 18px;"
+                                              th:text="${product.count}"></span>
+                                    </p>
+                                </div>
+                                <div class="media">
+                                    <div class="media-right" style="padding-top:10px;">
+                                        <span style="color: black;font-size: 20px;">商品单价:</span>
+                                        <span style="color: #0000FF;font-size: 18px;"
+                                              th:text="${product.price}"></span>
+                                    </div>
+                                    <div class="media-left" style="padding-top:10px;">
+                                        <span style="color: black;font-size: 20px;">商品描述信息:</span>
+                                        <p style="color: #0000FF; font-size: 16px; padding-top:10px;">
+                                            &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;<span
+                                                th:text="${product.description}"></span>
+
+                                        </p>
+                                    </div>
+
+
+                                </div>
+                                <div class="media">
+                                    <div class="media-right" style="padding-top:30px;padding-left:40px;">
+<!--                                        <a th:href="@{/cart/addCart(pid=${product.pid})}"><img-->
+<!--                                        <a th:href="@{/cart/addCart/{pid}(pid=${product.pid})}">-->
+<!--                                            <img th:src="@{/img/jgwc.jpg}"/>-->
+<!--                                        </a>-->
+                                        <img class="add" th:src="@{/img/jgwc.jpg}"/>
+<!--                                        <a th:href="@{/buy(pid=${product.pid})}">-->
+<!--                                        <a th:href="@{/buy/{pid}(pid=${product.pid})}">-->
+<!--                                            <img th:src="@{/img/js.jpg}"/></a>-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+<!--        评论区-->
+<!--        <div id="commentSection">-->
+<!--            <h2>评论区</h2>-->
+<!--            <form class="layui-form" action="">-->
+<!--                <div class="layui-form-item layui-form-text">-->
+<!--                    <label class="layui-form-label">评论</label>-->
+<!--                    <div class="layui-input-block">-->
+<!--                        <textarea name="comment" placeholder="请输入评论内容" class="layui-textarea"></textarea>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="layui-form-item">-->
+<!--                    <label class="layui-form-label">评分</label>-->
+<!--                    <div class="layui-input-block">-->
+<!--                        <div name="rating" id="rating" class="layui-rate"></div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="layui-form-item">-->
+<!--                    <div class="layui-input-block">-->
+<!--                        <button id="submitComment" class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </form>-->
+<!--            <ul id="comments" class="layui-timeline">-->
+<!--                &lt;!&ndash; 在这里显示评论 &ndash;&gt;-->
+<!--            </ul>-->
+<!--        </div>-->
+
+        <div id="commentSection">
+            <h2>评论区</h2>
+            <div class="flex-container">
+                <form class="layui-form" action="">
+                    <div class="layui-form-item layui-form-text">
+                        <label class="layui-form-label">评论</label>
+                        <div class="layui-input-block">
+                            <textarea name="comment" placeholder="请输入评论内容" class="layui-textarea"></textarea>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">评分</label>
+                        <div class="layui-input-block">
+                            <div name="rating" id="rating" class="layui-rate"></div>
+                            <button id="submitComment" class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                        </div>
+                    </div>
+
+                </form>
+                <ul id="comments" class="layui-timeline">
+                    <!-- 在这里显示评论 -->
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+    <script th:src="@{/layuiadmin/layui/layui.js}" src="../../layuiadmin/layui/layui.js"></script>
+    <script>
+        layui.config({
+            base: '/layuiadmin/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use(['form', 'jquery', 'layer', 'rate'], function () {
+            var form = layui.form;
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var rate = layui.rate;
+
+            $(document).ready(function() {
+                loadComments();
+            });
+
+
+
+
+            // 初始化评分
+            var _rating = rate.render({
+                elem: '#rating',  // 绑定元素
+                value: 0, // 初始值
+                text: true, // 是否显示文字
+                setText: function(value){ // 自定义文本的回调
+                    var arrs = {
+                        '1': '极差',
+                        '2': '差',
+                        '3': '中等',
+                        '4': '好',
+                        '5': '非常好',
+                    };
+                    this.span.text(arrs[value] || ( value + " 分"));
+                }
+            });
+
+
+            //点击class为add的图片，生成购物车,ajax请求
+            $(".add").click(function(){
+                var pid = [[${product.pid}]];
+                $.ajax({
+                    url: "/cart/addCart/"+pid,
+                    type: "post",
+                    data: {},
+                    success: function(data){
+                        if(data.code == 0){
+                            layer.msg("添加购物车成功");
+                        }else{
+                            layer.msg("添加购物车失败");
+                        }
+                    }
+                });
+            });
+
+
+            // 监听提交
+            form.on('submit(formDemo)', function (data) {
+                var comment = data.field.comment;
+                var rating = _rating.config.value;
+                console.log(comment);
+                if (comment) {
+                    // 在这里添加 AJAX 请求来提交评论
+                    var pid = [[${product.pid}]]
+                    $.ajax({
+                        url: "/discuss/addDiscuss/"+pid,  // 你的提交评论的 API 地址
+                        type: "post",
+                        //data: {content:comment,rating:rating},
+                        data: JSON.stringify({ content: comment, rating: rating }),
+                        contentType: "application/json",
+                        success: function (data) {
+                            if (data.code == 0) {
+                                layer.msg("评论提交成功");
+                                // 清空输入框
+                                $("#commentInput").val('');
+                                // 提交评论后重新获取评论列表
+                                loadComments();
+                            } else {
+                                layer.msg("评论提交失败");
+                            }
+                        }
+                    });
+                } else {
+                    layer.msg("评论不能为空");
+                }
+                return false; // 阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            });
+
+            function loadComments() {
+                var pid = [[${ product.pid }]]
+                $.ajax({
+                    url: "/discuss/getDiscussByPid/" + pid,
+                    type: "post",
+                    success: function (data) {
+                        if (data != null) {
+                            var html = '';
+                            for (var j = 0; j < data.length; j++) {
+                                var username = data[j].name;
+                                var avatar = data[j].avatar;
+                                var discussList = data[j].discussList;
+
+                                for (var i = 0; i < discussList.length; i++) {
+                                    html += `<li class="layui-timeline-item">
+                                        <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                                        <div class="layui-timeline-content layui-text">
+                                            <div class="user-info">
+                                                <img class="avatar" src="${avatar}" alt="User Avatar">
+                                                <div>
+                                                    <span class="username">${username}</span>
+                                                    <div id="rating-${j}-${i}"></div>
+                                                    <p class="comment-content">${discussList[i].content}</p>
+                                                    <span class="comment-time">${new Date(discussList[i].createtime).toLocaleString()}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>`;
+                                    // html += '<li class="layui-timeline-item"><i class="layui-icon layui-timeline-axis">&#xe63f;</i><div class="layui-timeline-content layui-text"><div class="user-info"><img class="avatar" src="' + avatar + '" alt="User Avatar"><div><span class="username">' + username + '</span><div id="rating-' + i + '"></div><p class="comment-content">' + discussList[i].content + '</p><span class="comment-time">' + new Date(discussList[i].createtime).toLocaleString() + '</span></div></div></div></li>';
+                                }
+
+
+                            }
+
+                            $("#comments").html(html);
+                            // 创建rate组件
+                            layui.use('rate', function(){
+                                var rate = layui.rate;
+                                for (var j = 0; j < data.length; j++) {
+                                    var discussList = data[j].discussList;
+                                    for (var i = 0; i < discussList.length; i++) {
+                                        // 初始化
+                                        rate.render({
+                                            elem: '#rating-'+j+'-' + i  //绑定元素
+                                            ,value: discussList[i].rating  //设置初始值
+                                            ,readonly: true  //只读
+                                        });
+                                    }
+                                }
+                            });
+
+
+                        } else {
+                            layer.msg("获取评论失败");
+                        }
+                    }
+                });
+            }
+
+
+
+        });
+
+
+
+
+
+    </script>
+</body>
+</html>

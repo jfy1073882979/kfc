@@ -1,0 +1,17 @@
+server:
+  port: 8001
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: kfc-web
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  thymeleaf:
+    suffix: .html
+    prefix: classpath:/templates/
+    cache: false
+
+
